@@ -1,0 +1,97 @@
+/*
+ * Customer can modify the code we provided.
+ * Lanner doesn't warrant the source code.
+ */
+
+/*
+ * The Parallel LCM Driver - Comiple and Usage 
+ */
+Please make you had enable the Parallel Port in the BIOS.
+If you can not "insmod" the Parallel LCM driver, you have
+to check the setting in the BIOS first.
+
+Please compile the source code in your Linux.
+After compiled, you will have the binary files.
+1. plcm_drv.o | plcm_drv.ko (Kernel mode driver module)
+2. plcm_test (User mode driver testing program)
+3. plcm_cursor_char (User mode driver testing program-for cursor shift & single text update)
+4. ppdev_test (User mode linux kernel driver testing program.linux kernel driver is needed
+   parport.ko,parport_pc.ko,ppdev.ko need to be loaded before runing this))
+5. Test (User mode testing script)
+Please run "Test" for testing the parallel LCM functions.
+
+If you want to add the driver module into your Linux.
+Please see the "Test" or "Makefile" first.
+For exmaple:
+You have to run "mknod /dev/plcm_drv c 248 0" to create the device file.
+
+If you have any question or requirement, please contact with the sales. 
+
+
+Note: insmod: error inserting 'plcm_drv.ko': -1 Input/output error
+      please check major device number to whether repeat
+
+/*
+ * Release Note
+ */
+
+Version 0.1.3
+1. ppdev_test support linux parport standard driver 
+
+Version 0.1.2
+1. correct the io-address detection method to solve an issue about some unit 
+   can not get the right io-address.
+2. make an error limitation to abort the PLCM command when the PLCM device is 
+   not at present or it is bad.
+
+Version 0.1.1
+1.Correct the control sequence and timing setting in LCM_Command function 
+  in plcm_drv.c
+2.Add check busy, check address and check data process in file read and 
+  write operations in plcm_drv.c
+3.Correct the process of the PLCM_IOCTL_SHIFT_RL and PLCM_IOCTL_CLEARDISPLAY 
+  ioctl requests in plcm_ioctl function in plcm_drv.c
+4.Update the plcm_test.c for production requests in Lanner
+
+Version 0.1.0
+1.Change LCM driver major number to 248
+
+Version 0.0.9
+1.Change LCM driver major number to 250
+
+Version 0.0.8
+1.Add support to compatible with linux kernel version 3.1.X
+
+Version 0.0.7
+1.Add support to compatible linux kernel version over 2.6.36
+
+Version 0.0.6
+1.Modify the way of Keypad receive value(only detect Status port:bit 3 5 and 6,receive keypad value is C7,E7,EF and CF).
+
+Version 0.0.5
+1.Modify keypad value in plcm_test.c
+  C7 ==> E6
+  E7 ==> C6
+  EF ==> CE
+  CF ==> EE
+2.Modify driver version to 0.0.5
+
+Version 0.0.4
+1. Set initail line to 1st line in code plcm_cursor_char.c 
+
+Version 0.0.3
+1. Support cursor shifting (cursor movement) and single text character update
+2. Add plcm_cursor_char.c for testing sursor shifting and single text char update
+
+Version 0.0.2
+1. Support CGRAM initialize demo code and characters in the driver.
+2. Support CGRAM test case demo code in the test application.
+
+Version 0.0.1
+1. Initial version.
+2. Support the basic LCM commands.
+3. Support the file read and write functions.
+4. Support 2.4.x and 2.6.x in the Makefile.
+5. Provide the use mode source code for test.
+6. Automaticlly check the character device file in /dev by the Makefile. 
+7. Automaticlly generate the test script in the Makefile.
