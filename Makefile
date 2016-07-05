@@ -34,6 +34,7 @@ endif
 	gcc -O2 ppdev_test.c -o ppdev_test
 	gcc -O2 plcm_test.c -o plcm_test
 	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
+	gcc -O2 info_disp.c -o info_disp
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 endif
