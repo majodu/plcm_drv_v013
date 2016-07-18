@@ -1,93 +1,73 @@
+#include "menu_objs.h"
 #include <sys/file.h>
 #include <stdio.h>
 #include <string.h>
 #include "plcm_ioctl.h"
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <net/if.h>
-#include <arpa/inet.h>
+// #include <unistd.h>
+// #include <sys/types.h>
+// #include <sys/socket.h>
+// #include <sys/ioctl.h>
+// #include <netinet/in.h>
+// #include <net/if.h>
+// #include <arpa/inet.h>    
+// #include <stdlib.h>
 
 int main(int argc, char *argv[])
 {
-	int devfd;
-    int fd;
-    struct ifreq ifr;
-    char *iface = "eth0";
-    unsigned char *mac;
 	unsigned char Keypad_Value = 0;
-	unsigned char Keypad_Message[40] = "";
 	unsigned char detect_dir;
-    
-    
+	// creates all the menus and items in the menu_objs c file
+	initialize_menus_and_items();
+    current_menu = main_menu;
+   
     devfd = open("/dev/plcm_drv", O_RDWR);
-
 	if(devfd == -1)
 	{
 		printf("Can't open /dev/plcm_drv\n");
 		return -1;
 	}
+	// stopps cursor from blinking 
+	//ioctl(devfd, PLCM_IOCTL_DISPLAY_B, 0);
+
     ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
-    strcpy(Keypad_Message,"b1:MAC b2:IP ");
-    write(devfd, Keypad_Message, strlen(Keypad_Message));
-  
+	// shows the titles of each of the menu items
+	show_menu(current_menu);
+
+// this  do while loop checks for button preses and then executes the functions on each menu item
  do{
-    
     Keypad_Value = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
-    detect_dir=(Keypad_Value & 0x28);
-    switch(detect_dir){
-	    case 0x08:
-		    //07 43 third
-		    
-			break;
-		case 0x20:
-			//31 67 first
-
-            
-     
-            fd = socket(AF_INET, SOCK_DGRAM, 0);
- 
-            ifr.ifr_addr.sa_family = AF_INET;
-            strncpy(ifr.ifr_name , iface , IFNAMSIZ-1);
- 
-            ioctl(fd, SIOCGIFHWADDR, &ifr);
- 
-            close(fd);
-     
-            mac = (unsigned char *)ifr.ifr_hwaddr.sa_data;
-     
-            //display mac address
-             sprintf(Keypad_Message,"%.2x:%.2x:%.2x:%.2x:%.2x:%.2x" , mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    detect_dir=(Keypad_Value & 0x68);
     
-			break;
-		case 0x00:
-			//99 35 second
-			
- 	        fd = socket(AF_INET, SOCK_DGRAM, 0);
-
- 	        /* I want to get an IPv4 IP address */
- 	        ifr.ifr_addr.sa_family = AF_INET;
-
- 	        /* I want IP address attached to "eth0" */
- 	        strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
-
- 	        ioctl(fd, SIOCGIFADDR, &ifr);
-
- 	        close(fd);
-
- 	        /* display result */
- 	        sprintf(Keypad_Message,"%s", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-			break;
-		case 0x28:
-			//39 75 fourth
-			
-			break;
-	}    
-    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
-    write(devfd, Keypad_Message, strlen(Keypad_Message));
-
-}while(1);
- return 0;
+	    if(detect_dir == 0x40){
+			if(current_menu.item1.route_to == NULL){
+				current_menu.item1.action();
+			}else{
+				current_menu = *(current_menu.item1.route_to);
+				show_menu(current_menu);
+			}
+		}else if(detect_dir == 0x60 ){
+     		if(current_menu.item2.route_to == NULL){
+				current_menu.item2.action();
+			}else{
+				current_menu = *(current_menu.item2.route_to);
+				show_menu(current_menu);
+			}
+           
+		}else if(detect_dir == 0x48){
+			if(current_menu.item3.route_to == NULL){
+				current_menu.item3.action();
+			}else{
+				current_menu = *(current_menu.item3.route_to);
+				show_menu(current_menu);
+			}
+		}else if(detect_dir == 0x68){
+			if(current_menu.item4.route_to == NULL){
+				current_menu.item4.action();
+			}else{
+				current_menu = *(current_menu.item4.route_to);
+				show_menu(current_menu);
+			}
+		}
+	}while(1);
+	return 0;
 }

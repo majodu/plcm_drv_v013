@@ -1,5 +1,5 @@
 struct menu_item{
-    char title[10];
+    char title[9];
     void (*action) (void);
     struct menu *route_to;
 };
@@ -19,7 +19,12 @@ struct menu current_menu;
 void initialize_menus_and_items();
 
 // menu operations 
+// print menu items is mostly for debugging
 void print_menu_items(struct menu m);
+// this is for displaying the actuall menu
+void show_menu(struct menu m);
+// called every button press to test if new submenu or action is called
+void on_btn_press(struct menu_item i);
 
 //pclm variables
 int devfd;

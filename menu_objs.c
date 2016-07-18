@@ -21,6 +21,8 @@ struct menu_item empty_item;
 struct menu_item mac;
 struct menu_item ip;
 struct menu_item status;
+struct menu_item ren_dhcp;
+struct menu_item restart;
 
 // actions
 void empty_action();
@@ -33,21 +35,48 @@ void system_restart();
 
 void initialize_menus_and_items(){
 
-    // adding titles and actions to menu items
+    // adding titles and actions to menu items use the empty item if you want to have a menu less than 4 items
+    // make sure each title is 9 characters or less to fit on the menu
     empty_item = make_menu_item("",empty_action,NULL);
     mac = make_menu_item("MAC",print_mac,NULL);
     ip = make_menu_item("IP",print_ip,NULL);
-    status = make_menu_item("Status",print_status,NULL)
-    ren_dhcp = make_menu_item("renew DHCP",renew_dhcp,NULL);
+    status = make_menu_item("Status",print_status,NULL);
+    ren_dhcp = make_menu_item("renw DHCP",renew_dhcp,NULL);
+    restart = make_menu_item("Restrt Sys",system_restart,NULL);
+
     // making menus
-    main_menu = make_menu(mac,ip,empty_item,empty_item);
+    // make sure to put the empty_item function if you are not using all 4 slots
+    main_menu = make_menu(mac,ip,restart,ren_dhcp);
 
 }
-
+  
 // menu functions
+// debugging function
 void print_menu_items(struct menu m){
     printf("%s,%s,%s,%s \n",m.item1.title,m.item2.title,m.item3.title,m.item4.title);
 }
+// displays the menu on screen
+void show_menu(struct menu m){
+    unsigned char first[19] = "";
+    unsigned char second[19] = "";
+    sprintf(first,"%-10s %-10s",m.item1.title,m.item2.title);
+    sprintf(second,"%-10s%-10s",m.item3.title,m.item4.title);
+
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, first, strlen(first));
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, second, strlen(second));
+}
+// tests if action or submenu is called
+void on_btn_press(struct menu_item i){
+    if(i.route_to == NULL){
+		i.action();
+	}else{
+		current_menu = *(i.route_to);
+		show_menu(current_menu);
+	}
+}
+
 // actions
 void empty_action(){}
 
@@ -137,10 +166,16 @@ void renew_dhcp(){
 
 // restart the lanner box
 void system_restart(){
-    system("sudo reboot");
+    unsigned char Keypad_Message[19] = "";
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    strcpy(Keypad_Message,"This takes a while");
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    system("smonitor restart system");
 }
 
-// make menu item
+// make menu item with a title, function, and route if it leads to another menu otherwise its NULL an the function is empty_action()
 struct menu_item make_menu_item(char title[10], void (*action) (void), struct menu *route_to){
     struct menu_item temp;
 
@@ -150,7 +185,7 @@ struct menu_item make_menu_item(char title[10], void (*action) (void), struct me
 
     return temp;
 }
-//  make menu
+//  make menu with for menu item arguments
 struct menu make_menu(struct menu_item item1,struct menu_item item2,struct menu_item item3,struct menu_item item4){
     struct menu temp;
 

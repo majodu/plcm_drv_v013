@@ -34,7 +34,7 @@ endif
 	gcc -O2 ppdev_test.c -o ppdev_test
 	gcc -O2 plcm_test.c -o plcm_test
 	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
-	gcc -O2 info_disp.c -o info_disp
+	gcc -O2 info_disp.c menu_objs.c -o menuTest
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 endif
@@ -65,6 +65,8 @@ clean:
 	rm -f plcm_cursor_char
 	rm -f ppdev_test
 	rm -f Test
+	rm -f menuTest 
+	
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
 endif
