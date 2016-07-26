@@ -138,7 +138,7 @@ void print_mac(){
 
 // prints the smonitor status to the screen
 void print_status(){
-    // strcpy(temp,"resp:");
+    //strcpy(temp,"resp:");
 	// 		strcpy(Keypad_Message,"resp:");
 	// 		my_string = (char *) malloc (nbytes + 1);
   	// 		/* Open the command for reading. */
@@ -157,6 +157,28 @@ void print_status(){
   	// 		pclose(fp);
 			
 	// 		//strncpy(Keypad_Message,temp,strlen(temp));
+    FILE *fp;
+    char path[1024];
+    char Keypad_Message[19] = "Status:";
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+
+    fp = popen("smonitor getstatus", "r");
+    if (fp == NULL) {
+        printf("Failed to run command\n" );
+        exit(1);
+    }
+    while (fgets(path, sizeof(path), fp) != NULL) {
+        printf(,"%s", path);
+    }
+    pclose(fp);
+    if(strlen(path) > 19){
+        strncpy(Keypad_Message,path,19);
+    }else{
+        strncpy(Keypad_Message,path,strlen(path));
+    }
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    //write(devfd, Keypad_Message, strlen(Keypad_Message));
 }
 
 // renew DHCP certificate
