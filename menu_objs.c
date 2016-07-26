@@ -169,7 +169,7 @@ void print_status(){
         exit(1);
     }
     while (fgets(path, sizeof(path), fp) != NULL) {
-        printf(,"%s", path);
+        printf("%s", path);
     }
     pclose(fp);
     if(strlen(path) > 19){
