@@ -1,0 +1,1 @@
+cmd_/root/plcm_drv_v013/plcm_drv.ko.unsigned := ld -r -m elf_x86_64 -T /usr/src/kernels/2.6.32-431.20.3.el6.x86_64/scripts/module-common.lds --build-id -o /root/plcm_drv_v013/plcm_drv.ko.unsigned /root/plcm_drv_v013/plcm_drv.o /root/plcm_drv_v013/plcm_drv.mod.o 

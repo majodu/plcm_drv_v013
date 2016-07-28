@@ -34,7 +34,7 @@ endif
 	gcc -O2 ppdev_test.c -o ppdev_test
 	gcc -O2 plcm_test.c -o plcm_test
 	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
-	gcc -O2 info_disp.c menu_objs.c -o menuTest
+	gcc -O2 info_disp.c menu_objs.c -o menuRun
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 endif
@@ -45,27 +45,28 @@ ifeq ($(KVER),2.4)
 	$(CC) $(MODCFLAGS) -c plcm_drv.c
 endif
 ifeq ($(wildcard Test),)
-	echo "rmmod plcm_drv" > Test
+	echo "rmmod plcm_drv" > MenuProgram
 ifeq ($(KVER3),3)
-	echo "insmod plcm_drv.ko" >> Test
+	echo "insmod plcm_drv.ko" >> MenuProgram
 endif
 ifeq ($(KVER),2.6)
-	echo "insmod plcm_drv.ko" >> Test
+	echo "insmod plcm_drv.ko" >> MenuProgram
 endif
 ifeq ($(KVER),2.4)
-	echo "insmod plcm_drv.o" >> Test
+	echo "insmod plcm_drv.o" >> MenuProgram
 endif
-	echo "./plcm_test" >> Test
-	echo "./plcm_test -stop" >> Test
-	echo "rmmod plcm_drv" >> Test
-	chmod 777 Test
+	echo "make reboot" >> MenuProgram
+	echo "./menuRun" >> MenuProgram
+	echo "./menuRun -stop" >> MenuProgram
+	echo "rmmod plcm_drv" >> MenuProgram
+	chmod 777 MenuProgram
 endif
 clean:
 	rm -f plcm_test
 	rm -f plcm_cursor_char
 	rm -f ppdev_test
-	rm -f Test
-	rm -f menuTest 
+	rm -f MenuProgram
+	rm -f menuRun 
 	
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
@@ -76,4 +77,7 @@ endif
 ifeq ($(KVER),2.4)
 	rm -f *.o *.ko
 endif
-
+reboot:
+ifeq ($(wildcard /dev/plcm_drv),)
+	mknod /dev/plcm_drv c 248 0
+endif

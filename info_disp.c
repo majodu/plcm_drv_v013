@@ -3,19 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 #include "plcm_ioctl.h"
-// #include <unistd.h>
-// #include <sys/types.h>
-// #include <sys/socket.h>
-// #include <sys/ioctl.h>
-// #include <netinet/in.h>
-// #include <net/if.h>
-// #include <arpa/inet.h>    
-// #include <stdlib.h>
+
 
 int main(int argc, char *argv[])
 {
 	unsigned char Keypad_Value = 0;
 	unsigned char detect_dir;
+	unsigned char Cur_Display = 0x08; // Current Display On/Off Ctrl
+	unsigned char Ctrl = 0;
 	// creates all the menus and items in the menu_objs c file
 	initialize_menus_and_items();
     current_menu = main_menu;
@@ -26,11 +21,14 @@ int main(int argc, char *argv[])
 		printf("Can't open /dev/plcm_drv\n");
 		return -1;
 	}
-	// stopps cursor from blinking 
-	//ioctl(devfd, PLCM_IOCTL_DISPLAY_B, 0);
 
-    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+	// stops cursor from blinking 
+	ioctl(devfd, PLCM_IOCTL_DISPLAY_B, 0);
+	ioctl(devfd, PLCM_IOCTL_DISPLAY_C, 0);
+
+    
 	// shows the titles of each of the menu items
+	//ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
 	show_menu(current_menu);
 
 // this  do while loop checks for button preses and then executes the functions on each menu item
