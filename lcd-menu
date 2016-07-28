@@ -3,17 +3,16 @@
 # Provides:
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start daemon at boot time
-# Description:       Enable service provided by daemon.
+# Default-Start:     3 
+# Default-Stop:      3
+# Description:       starts LCD Menu code
 ### END INIT INFO
 
 dir="/root/plcm_drv_v013"
-cmd="./menuRun"
+cmd="./MenuProgram"
 user=""
 
-name=`basename $0`
+name=`menuRun`
 pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name.log"
 stderr_log="/var/log/$name.err"
