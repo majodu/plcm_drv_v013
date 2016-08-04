@@ -2,7 +2,9 @@
 #include <sys/file.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "plcm_ioctl.h"
+
 
 
 int main(int argc, char *argv[])
@@ -43,9 +45,10 @@ int main(int argc, char *argv[])
 
 // this  do while loop checks for button preses and then executes the functions on each menu item
  do{
+	usleep(100);
     Keypad_Value = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
     detect_dir=(Keypad_Value & 0x68);
-    sleep(1);
+
 	    if(detect_dir == 0x40){
 			if(current_menu.item1.route_to == NULL){
 				current_menu.item1.action();
