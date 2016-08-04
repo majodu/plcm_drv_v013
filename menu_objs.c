@@ -182,7 +182,9 @@ void print_status(){
 
 // renew DHCP certificate
 void renew_dhcp(){
-    system("sudo dhclient -r; sudo dhclient");
+  //  system("sudo dhclient -r; sudo dhclient");
+  system("/etc/init.d/network restart");
+
 }
 
 // restart the lanner box BROKEN
