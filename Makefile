@@ -44,19 +44,19 @@ ifeq ($(KVER),2.4)
 	$(CC) $(MODCFLAGS) -c plcm_drv.c
 endif
 
-ifeq ($(wildcard menuRun),)
+ifeq ($(wildcard lcd-menu),)
 	gcc -O2 ppdev_test.c -o ppdev_test
 	gcc -O2 plcm_test.c -o plcm_test
 	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
 	gcc -O2 info_disp.c menu_objs.c -o lcd-menu  
 endif
-
+	stop lcd-menu
 	rmmod plcm_drv
 ifeq ($(wildcard /dev/plcm_drv),) 
 	mknod /dev/plcm_drv c 248 0
 endif	
 	insmod plcm_drv.ko	
-
+	install -m 755 lcd-menu /usr/bin/.
 clean:
 	rm -f plcm_test
 	rm -f plcm_cursor_char

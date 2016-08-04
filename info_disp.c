@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
  do{
     Keypad_Value = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
     detect_dir=(Keypad_Value & 0x68);
-    sleep(500);
+    sleep(1);
 	    if(detect_dir == 0x40){
 			if(current_menu.item1.route_to == NULL){
 				current_menu.item1.action();
@@ -54,13 +54,15 @@ int main(int argc, char *argv[])
 				show_menu(current_menu);
 			}
 		}else if(detect_dir == 0x60 ){
+			
      		if(current_menu.item2.route_to == NULL){
 				current_menu.item2.action();
 			}else{
 				current_menu = *(current_menu.item2.route_to);
 				show_menu(current_menu);
 			}
-           
+			
+			
 		}else if(detect_dir == 0x48){
 			if(current_menu.item3.route_to == NULL){
 				current_menu.item3.action();
