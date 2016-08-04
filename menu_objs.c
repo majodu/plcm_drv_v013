@@ -30,6 +30,8 @@ void print_mac();
 void print_ip();
 void print_status();
 void renew_dhcp();
+void restart_network();
+void to_ip_menu();
 void system_restart(); // dont use broken
 // function that makes all the menus and items
 
@@ -42,11 +44,14 @@ void initialize_menus_and_items(){
     ip = make_menu_item("IP",print_ip,NULL);
     status = make_menu_item("Status",print_status,NULL);
     ren_dhcp = make_menu_item("rnw DHCP",renew_dhcp,NULL);
+    to_ip_menu = make_menu_item("reset ip",empty_action,ip_menu);
+    restart_network_item = make_menu_item("rst net",restart_network,NULL);
     //restart = make_menu_item("Restart",system_restart,NULL);
 
     // making menus
     // make sure to put the empty_item function if you are not using all 4 slots
-    main_menu = make_menu(mac,ip,status,ren_dhcp);
+    main_menu = make_menu(mac,ip,status,to_ip_menu);
+    ip_menu = make_menu(restart_network,ren_dhcp,empty_item,empty_item);
 
 }
 // menu functions
@@ -182,9 +187,10 @@ void print_status(){
 
 // renew DHCP certificate
 void renew_dhcp(){
-  //  system("sudo dhclient -r; sudo dhclient");
+  system("sudo dhclient -r; sudo dhclient");
+}
+void restart_network(){
   system("/etc/init.d/network restart");
-
 }
 
 // restart the lanner box BROKEN
