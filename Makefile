@@ -48,7 +48,7 @@ ifeq ($(wildcard menuRun),)
 	gcc -O2 ppdev_test.c -o ppdev_test
 	gcc -O2 plcm_test.c -o plcm_test
 	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
-	gcc -O2 info_disp.c menu_objs.c -o lcd-menu
+	gcc -O2 info_disp.c menu_objs.c -o lcd-menu 
 endif
 
 	rmmod plcm_drv
