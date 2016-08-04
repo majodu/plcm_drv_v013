@@ -30,7 +30,7 @@ void print_mac();
 void print_ip();
 void print_status();
 void renew_dhcp();
-void system_restart();
+void system_restart(); // dont use broken
 // function that makes all the menus and items
 
 void initialize_menus_and_items(){
@@ -185,7 +185,7 @@ void renew_dhcp(){
     system("sudo dhclient -r; sudo dhclient");
 }
 
-// restart the lanner box
+// restart the lanner box BROKEN
 void system_restart(){
     FILE *fp;
     char path[1024];

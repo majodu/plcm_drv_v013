@@ -28,13 +28,12 @@ PWD   := $(shell pwd)
 # parts which are OS dependant.
 #
 default:
-ifeq ($(wildcard /dev/plcm_drv),)
-	mknod /dev/plcm_drv c 248 0
-endif
 	gcc -O2 ppdev_test.c -o ppdev_test
 	gcc -O2 plcm_test.c -o plcm_test
 	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
 	gcc -O2 info_disp.c menu_objs.c -o menuRun
+
+boot:
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
 endif
@@ -44,29 +43,25 @@ endif
 ifeq ($(KVER),2.4)
 	$(CC) $(MODCFLAGS) -c plcm_drv.c
 endif
-ifeq ($(wildcard Test),)
-	echo "rmmod plcm_drv" > MenuProgram
-ifeq ($(KVER3),3)
-	echo "insmod plcm_drv.ko" >> MenuProgram
+
+ifeq ($(wildcard menuRun),)
+	gcc -O2 ppdev_test.c -o ppdev_test
+	gcc -O2 plcm_test.c -o plcm_test
+	gcc -O2 plcm_cursor_char.c -o plcm_cursor_char
+	gcc -O2 info_disp.c menu_objs.c -o lcd-menu
 endif
-ifeq ($(KVER),2.6)
-	echo "insmod plcm_drv.ko" >> MenuProgram
-endif
-ifeq ($(KVER),2.4)
-	echo "insmod plcm_drv.o" >> MenuProgram
-endif
-	echo "make reboot" >> MenuProgram
-	echo "./menuRun" >> MenuProgram
-	echo "./menuRun -stop" >> MenuProgram
-	echo "rmmod plcm_drv" >> MenuProgram
-	chmod 777 MenuProgram
-endif
+
+	rmmod plcm_drv
+ifeq ($(wildcard /dev/plcm_drv),)
+	mknod /dev/plcm_drv c 248 0
+endif	
+	insmod plcm_drv.ko	
+
 clean:
 	rm -f plcm_test
 	rm -f plcm_cursor_char
 	rm -f ppdev_test
-	rm -f MenuProgram
-	rm -f menuRun 
+	rm -f lcd-menu 
 	
 ifeq ($(KVER3),3)
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
@@ -76,8 +71,4 @@ ifeq ($(KVER),2.6)
 endif
 ifeq ($(KVER),2.4)
 	rm -f *.o *.ko
-endif
-reboot:
-ifeq ($(wildcard /dev/plcm_drv),)
-	mknod /dev/plcm_drv c 248 0
 endif

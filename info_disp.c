@@ -11,6 +11,16 @@ int main(int argc, char *argv[])
 	unsigned char detect_dir;
 	unsigned char Cur_Display = 0x08; // Current Display On/Off Ctrl
 	unsigned char Ctrl = 0;
+
+	if(argc == 2)
+        {
+                if(strcmp("-stop", argv[1]) == 0)
+                {
+                        printf("plcm_drv thread has been stopped.\n");
+                        printf("sled_drv : PLCM_IOCTL_STOP_THREAD\n");
+		        goto out;
+        		}
+		}
 	// creates all the menus and items in the menu_objs c file
 	initialize_menus_and_items();
     current_menu = main_menu;
@@ -67,5 +77,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}while(1);
+out:
+	close(devfd);
 	return 0;
 }
