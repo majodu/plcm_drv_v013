@@ -14,7 +14,7 @@ struct menu{
 // menus
 struct menu main_menu;
 struct menu current_menu;
-struct ip_menu;
+struct menu ip_menu;
 // making menus and items
 void initialize_menus_and_items();
 
