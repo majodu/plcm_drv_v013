@@ -16,6 +16,8 @@
 struct menu_item make_menu_item(char title[], void (*action) (void), struct menu *route_to);
 struct menu make_menu(struct menu_item item1,struct menu_item item2,struct menu_item item3,struct menu_item item4);
 
+void clear_screen();
+
 // menu items
 struct menu_item empty_item;
 struct menu_item mac;
@@ -52,7 +54,7 @@ void initialize_menus_and_items(){
 
     // making menus
     // make sure to put the empty_item function if you are not using all 4 slots
-    main_menu = make_menu(mac,ip,status,to_ip_menu);
+    main_menu = make_menu(mac,ip,status,restart_network_item);
     ip_menu = make_menu(restart_network_item,ren_dhcp,empty_item,empty_item);
 
 }
@@ -192,30 +194,38 @@ void renew_dhcp(){
   system("sudo dhclient -r; sudo dhclient");
 }
 void restart_network(){
-  system("/etc/init.d/network restart");
+    unsigned char Keypad_Message[19] = "Changing IP";
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    strcpy(Keypad_Message,"Please wait...");
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    system("/etc/init.d/network restart");
+    strcpy(Keypad_Message,"Done");
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
 }
 
 // restart the lanner box BROKEN
 void system_restart(){
-    FILE *fp;
-    char path[1024];
-    unsigned char Keypad_Message[19] = "";
-    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
-    write(devfd, Keypad_Message, strlen(Keypad_Message));
-    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
-    strcpy(Keypad_Message,"Please Wait...");
-    write(devfd, Keypad_Message, strlen(Keypad_Message));
-    fp = popen("smonitor restart system 2>&1", "r");
-    if (fp == NULL) {
-        printf("Failed to run command\n" );
-        exit(1);
-    }
-    while (fgets(path, sizeof(path), fp) != NULL) {
-    }
-    pclose(fp);
-    strcpy(Keypad_Message,"All Done");
-    write(devfd, Keypad_Message, strlen(Keypad_Message));
-    //system("smonitor restart system");
+    // FILE *fp;
+    // char path[1024];
+    // unsigned char Keypad_Message[19] = "";
+    // ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    // write(devfd, Keypad_Message, strlen(Keypad_Message));
+    // ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    // strcpy(Keypad_Message,"Please Wait...");
+    // write(devfd, Keypad_Message, strlen(Keypad_Message));
+    // fp = popen("smonitor restart system 2>&1", "r");
+    // if (fp == NULL) {
+    //     printf("Failed to run command\n" );
+    //     exit(1);
+    // }
+    // while (fgets(path, sizeof(path), fp) != NULL) {
+    // }
+    // pclose(fp);
+    // strcpy(Keypad_Message,"All Done");
+    // write(devfd, Keypad_Message, strlen(Keypad_Message));
 }
 
 // make menu item with a title, function, and route if it leads to another menu otherwise its NULL an the function is empty_action()
@@ -240,3 +250,10 @@ struct menu make_menu(struct menu_item item1,struct menu_item item2,struct menu_
     return temp;
 }
 
+void clear_screen(){
+    char Keypad_Message[19] = "";
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+}
