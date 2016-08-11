@@ -96,6 +96,7 @@ void on_btn_press(struct menu_item i){
 		current_menu = *(i.route_to);
 		show_menu(current_menu);
 	}
+    
 }
 
 // actions
@@ -195,6 +196,9 @@ void renew_dhcp(){
 }
 void restart_network(){
     unsigned char Keypad_Message[19] = "Changing IP";
+
+    clear_screen();
+    
     ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
     write(devfd, Keypad_Message, strlen(Keypad_Message));
     strcpy(Keypad_Message,"Please wait...");
