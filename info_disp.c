@@ -50,36 +50,17 @@ int main(int argc, char *argv[])
     detect_dir=(Keypad_Value & 0x68);
 
 	    if(detect_dir == 0x40){
-			if(current_menu.item1.route_to == NULL){
-				current_menu.item1.action();
-			}else{
-				current_menu = *(current_menu.item1.route_to);
-				show_menu(current_menu);
-			}
+
+			on_btn_press(current_menu.item1);
 		}else if(detect_dir == 0x60 ){
 			
-     		if(current_menu.item2.route_to == NULL){
-				current_menu.item2.action();
-			}else{
-				current_menu = *(current_menu.item2.route_to);
-				show_menu(current_menu);
-			}
-			
-			
+     		on_btn_press(current_menu.item2);	
 		}else if(detect_dir == 0x48){
-			if(current_menu.item3.route_to == NULL){
-				current_menu.item3.action();
-			}else{
-				current_menu = *(current_menu.item3.route_to);
-				show_menu(current_menu);
-			}
+
+			on_btn_press(current_menu.item3);
 		}else if(detect_dir == 0x68){
-			if(current_menu.item4.route_to == NULL){
-				current_menu.item4.action();
-			}else{
-				current_menu = *(current_menu.item4.route_to);
-				show_menu(current_menu);
-			}
+
+			on_btn_press(current_menu.item4);
 		}
 	}while(1);
 out:
