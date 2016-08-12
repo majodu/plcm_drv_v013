@@ -28,4 +28,5 @@ void on_btn_press(struct menu_item i);
 
 //pclm variables
 int devfd;
-
+unsigned char detect_dir;
+unsigned char detect_press;

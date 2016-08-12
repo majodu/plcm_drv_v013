@@ -10,7 +10,12 @@
 int main(int argc, char *argv[])
 {
 	unsigned char Keypad_Value = 0;
-	unsigned char detect_dir;
+	char Keypad_Message[19] = "";
+	unsigned char Pre_Value = 0;
+	int btn1_state = 0;
+	int btn2_state = 0;
+	int btn3_state = 0;
+	int btn4_state = 0;
 	unsigned char Cur_Display = 0x08; // Current Display On/Off Ctrl
 	unsigned char Ctrl = 0;
 
@@ -37,32 +42,79 @@ int main(int argc, char *argv[])
 	// stops cursor from blinking 
 	ioctl(devfd, PLCM_IOCTL_DISPLAY_B, 0);
 	ioctl(devfd, PLCM_IOCTL_DISPLAY_C, 0);
+	//clear previous keypad status
+	ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0); 
 
-    
 	// shows the titles of each of the menu items
-	//ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
 	show_menu(current_menu);
+
+    Pre_Value = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
 
 // this  do while loop checks for button preses and then executes the functions on each menu item
  do{
-	usleep(100);
     Keypad_Value = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
-    detect_dir=(Keypad_Value & 0x68);
-
-	    if(detect_dir == 0x40){
-
-			on_btn_press(current_menu.item1);
-		}else if(detect_dir == 0x60 ){
+	if(Pre_Value != Keypad_Value)
+		{
+			detect_press=(Keypad_Value & 0x40);
+			detect_dir=(Keypad_Value & 0x28);
+			if(detect_press == 0x40){
+				switch(detect_dir){
+			    	case 0x00: // left
+						btn2_state = 0;
+						btn3_state = 0;
+						btn4_state = 0;
+						if(btn1_state == 1){
+							show_menu(current_menu);
+							btn1_state = 0;
+						}else{
+							on_btn_press(current_menu.item1);
+							btn1_state = 1;
+						}
+					break;
+			    	case 0x20: // up
+						btn1_state = 0;
+						btn3_state = 0;
+						btn4_state = 0;
+						if(btn2_state == 1){
+							show_menu(current_menu);
+							btn2_state = 0;
+						}else{
+							on_btn_press(current_menu.item2);
+							btn2_state = 1;
+						} 
+					break;
+			    	case 0x08: // down
+						btn1_state = 0;
+						btn2_state = 0;
+						btn4_state = 0;
+						if(btn3_state == 1){
+							show_menu(current_menu);
+							btn3_state = 0;
+						}else{
+							on_btn_press(current_menu.item3);
+							btn3_state = 1;
+						} 
+					break;
+					case 0x28: // right
+						btn1_state = 0;
+						btn2_state = 0;
+						btn3_state = 0;
+						if(btn4_state == 1){
+							show_menu(current_menu);
+							btn4_state = 0;
+						}else{
+							on_btn_press(current_menu.item4);
+							btn4_state = 1;
+						}
+					break;
+				}
+				
+			}
 			
-     		on_btn_press(current_menu.item2);	
-		}else if(detect_dir == 0x48){
-
-			on_btn_press(current_menu.item3);
-		}else if(detect_dir == 0x68){
-
-			on_btn_press(current_menu.item4);
+			Pre_Value = Keypad_Value;
 		}
-	}while(1);
+		usleep(100000);
+}while(1);
 out:
 	close(devfd);
 	return 0;

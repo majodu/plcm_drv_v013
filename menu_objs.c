@@ -90,13 +90,14 @@ void show_menu(struct menu m){
 }
 // tests if action or submenu is called
 void on_btn_press(struct menu_item i){
+    
     if(i.route_to == NULL){
 		i.action();
 	}else{
 		current_menu = *(i.route_to);
 		show_menu(current_menu);
-	}
-    
+	} 
+
 }
 
 // actions
@@ -192,13 +193,27 @@ void print_status(){
 
 // renew DHCP certificate
 void renew_dhcp(){
-  system("sudo dhclient -r; sudo dhclient");
+     unsigned char Keypad_Message[19] = "Changing IP";
+
+    clear_screen();
+
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    strcpy(Keypad_Message,"Please wait...");
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+    system("sudo dhclient -r; sudo dhclient");
+    strcpy(Keypad_Message,"Done");
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+  
 }
+
 void restart_network(){
     unsigned char Keypad_Message[19] = "Changing IP";
 
     clear_screen();
-    
+
     ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
     write(devfd, Keypad_Message, strlen(Keypad_Message));
     strcpy(Keypad_Message,"Please wait...");
