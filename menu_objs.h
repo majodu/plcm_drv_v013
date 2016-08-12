@@ -15,6 +15,7 @@ struct menu{
 struct menu main_menu;
 struct menu current_menu;
 struct menu ip_menu;
+struct menu are_you_sure;
 // making menus and items
 void initialize_menus_and_items();
 
@@ -28,5 +29,4 @@ void on_btn_press(struct menu_item i);
 
 //pclm variables
 int devfd;
-unsigned char detect_dir;
-unsigned char detect_press;
+

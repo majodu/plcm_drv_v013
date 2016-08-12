@@ -27,6 +27,10 @@ struct menu_item ren_dhcp;
 struct menu_item restart;
 struct menu_item restart_network_item;
 struct menu_item to_ip_menu;
+struct menu_item renew_yes;
+struct menu_item renew_no;
+struct menu_item to_are_you_sure;
+
 
 
 // actions
@@ -37,8 +41,8 @@ void print_status();
 void renew_dhcp();
 void restart_network();
 void system_restart(); // dont use broken
+void show_are_you_sure();
 // function that makes all the menus and items
-
 void initialize_menus_and_items(){
 
     // adding titles and actions to menu items use the empty item if you want to have a menu less than 4 items
@@ -50,12 +54,15 @@ void initialize_menus_and_items(){
     ren_dhcp = make_menu_item("rnw DHCP",renew_dhcp,NULL);
     to_ip_menu = make_menu_item("reset ip",empty_action, &ip_menu);
     restart_network_item = make_menu_item("rst net",restart_network,NULL);
+   
+    to_are_you_sure = make_menu_item("rnw DHCP",show_are_you_sure,NULL);
     //restart = make_menu_item("Restart",system_restart,NULL);
 
     // making menus
     // make sure to put the empty_item function if you are not using all 4 slots
-    main_menu = make_menu(mac,ip,status,restart_network_item);
+    main_menu = make_menu(ip,mac,status,to_are_you_sure);
     ip_menu = make_menu(restart_network_item,ren_dhcp,empty_item,empty_item);
+    
 
 }
 // menu functions
@@ -210,7 +217,7 @@ void renew_dhcp(){
 }
 
 void restart_network(){
-    unsigned char Keypad_Message[19] = "Changing IP";
+    unsigned char Keypad_Message[19] = "Restarting Network";
 
     clear_screen();
 
@@ -246,6 +253,66 @@ void system_restart(){
     // strcpy(Keypad_Message,"All Done");
     // write(devfd, Keypad_Message, strlen(Keypad_Message));
 }
+
+void show_are_you_sure(){
+    int break_loop = 0;
+    unsigned char Keypad_Value1 = 0;
+	unsigned char detect_dir1;
+	unsigned char detect_press1;
+    unsigned char Pre_Value1 = 0;
+    char Keypad_Message[19] = "Are you sure?";
+    unsigned char p1[9] = "";
+    unsigned char p2[9] = "";
+    unsigned char second[19] = "";
+
+    Pre_Value1 = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
+
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 1);
+    write(devfd, Keypad_Message, strlen(Keypad_Message));
+
+    strncpy(p1,"yes",8);
+    strncpy(p2,"no",8);
+    sprintf(second,"%-2s %-9s",p1,p2);
+    ioctl(devfd, PLCM_IOCTL_SET_LINE, 2);
+    write(devfd, second, strlen(second));
+    
+
+    do{
+    Keypad_Value1 = ioctl(devfd, PLCM_IOCTL_GET_KEYPAD, 0);
+	if(Pre_Value1 != Keypad_Value1)
+		{
+			detect_press1=(Keypad_Value1 & 0x40);
+			detect_dir1=(Keypad_Value1 & 0x28);
+			if(detect_press1 == 0x40){
+				switch(detect_dir1){
+			    	case 0x20: // left
+                        restart_network();
+                        usleep(2000000);
+                        show_menu(current_menu);
+                        return;
+					break;
+			    	case 0x00: // for some reason 0x00 and 0x20 have to be switched
+                        show_menu(current_menu);
+                        usleep(500000);
+                        return;
+					break;
+			    	case 0x08: // down
+					break;
+					case 0x28: // right
+					break;
+				}
+				
+			}
+			Pre_Value1 = Keypad_Value1;
+		}
+        
+		usleep(10000);
+    }while(1);
+
+}
+
+
+
 
 // make menu item with a title, function, and route if it leads to another menu otherwise its NULL an the function is empty_action()
 struct menu_item make_menu_item(char title[10], void (*action) (void), struct menu *route_to){
