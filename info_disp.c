@@ -10,6 +10,8 @@
 int main(int argc, char *argv[])
 {
 	unsigned char Keypad_Value = 0;
+	unsigned char detect_dir;
+	unsigned char detect_press;
 	char Keypad_Message[19] = "";
 	unsigned char Pre_Value = 0;
 	int btn1_state = 0;
